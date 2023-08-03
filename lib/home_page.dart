@@ -144,6 +144,16 @@ class NavigationPanel extends StatelessWidget {
                       style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),
+                  ListTile(
+                    onTap: () async {
+                      onPageVisited(); // Notify the HomePage that the user visited another page
+                      Navigator.pushNamed(context, '/backupPage');
+                    },
+                    title: Text(
+                      "Backup",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
                 ],
               ),
             ),

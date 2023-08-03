@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:time_trackr/global.dart';
 import 'package:time_trackr/shared_pref.dart';
@@ -109,6 +113,13 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 child: Text('Submit'),
               ),
+              ElevatedButton(
+  onPressed: () async {
+    await _importDatabase(context); // Call the import database function
+    await getUsersFromSharedPreferences(); // Refresh the user list
+  },
+  child: Text('Import Database'),
+),
             ],
           ),
         ),
@@ -146,4 +157,65 @@ class _LoginPageState extends State<LoginPage> {
       "name": name,
     });
   }
+
+  Future<void> _importDatabase(BuildContext context) async {
+  // Open a file picker to select the backup file
+  FilePickerResult? result = await FilePicker.platform.pickFiles();
+  if (result != null) {
+    // Get the selected backup file
+    PlatformFile file = result.files.first;
+
+    try {
+      // Copy the backup file to the app's data directory
+      final Directory appDirectory = await getApplicationDocumentsDirectory();
+      final String backupPath = '${appDirectory.path}/backup.db';
+      await File(file.path!).copy(backupPath);
+
+      // Open the copied backup database
+      final Database backupDb = await openDatabase(backupPath);
+
+      // Get a list of all table names in the backup database
+      final List<String> tableNames = await backupDb
+          .query('sqlite_master', where: 'type = ?', whereArgs: ['table'])
+          .then((tables) => tables.map((table) => table['name'] as String)
+          .toList());
+
+      // Open the existing database
+      final Database existingDb = await _databaseHelper.database;
+
+      // Import data from each table in the backup database
+      for (final tableName in tableNames) {
+        // Fetch data from the corresponding table in the backup database
+        final List<Map<String, dynamic>> backupData =
+            await backupDb.query(tableName);
+
+        // Clear the corresponding table in the existing database
+        await existingDb.delete(tableName);
+
+        // Import the backup data into the corresponding table in the existing database
+        for (final Map<String, dynamic> row in backupData) {
+          await existingDb.insert(tableName, row);
+        }
+      }
+
+      // Close the backup database
+      await backupDb.close();
+
+      // Show a snackbar or dialog to inform the user about the import status
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Database imported successfully!'),
+        ),
+      );
+    } catch (e) {
+      print('Error importing database: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred while importing the database.'),
+        ),
+      );
+    }
+  }
+}
+
 }

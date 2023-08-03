@@ -39,6 +39,7 @@ class DatabaseHelper {
         Subject_Name TEXT,
         Day INTEGER,
         Lecture_No INTEGER,
+        Classroom TEXT, -- New column added
         PRIMARY KEY (Id, Day, Lecture_No),
         FOREIGN KEY (Id, Subject_Name) REFERENCES subject_name (Id, Subject)
           ON DELETE CASCADE
@@ -87,7 +88,7 @@ class DatabaseHelper {
       END;
     ''');
 
-      // Trigger to update Attendance
+    // Trigger to update Attendance
     await db.execute('''
       CREATE TRIGGER update_attendance
       AFTER INSERT ON attendance_record
@@ -103,7 +104,6 @@ class DatabaseHelper {
         WHERE subject_name.Id = NEW.Id AND subject_name.Subject = NEW.Subject;
       END;
     ''');
-    
   }
 
   Future<List<Map<String, dynamic>>> queryAll(String table) async {

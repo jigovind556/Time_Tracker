@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:time_trackr/global.dart';
 import 'package:time_trackr/shared_pref.dart';
 
 import 'attendancePage.dart';
+import 'backup/backupsql.dart';
 import 'database_helper.dart';
 import 'editTimeTable.dart';
 import 'home_page.dart';
 import 'loginPage.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Permission.storage.request();
   runApp(const MyApp());
 }
 
@@ -43,7 +48,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginPage(),
         '/home': (context) => HomePage(),
         '/timeTableEntry': (context) => TimetablePage(),
-        '/attendaceEntry': (context)=>  AttendanceEntryPage(),
+        '/attendaceEntry': (context) => AttendanceEntryPage(),
+        '/backupPage': (context) => BackupPage(),
       },
       // home: const MyHomePage(title: 'Time Tracker'),
     );

@@ -40,6 +40,9 @@ dependencies:
   intl: ^0.18.1
   flutter_chart: ^0.1.6
   fl_chart: ^0.63.0
+  permission_handler: ^10.4.3
+  path_provider: ^2.0.15
+  file_picker: ^5.3.3
 
 dev_dependencies:
   flutter_test:
