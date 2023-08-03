@@ -43,7 +43,7 @@ class _AttendanceEntryPageState extends State<AttendanceEntryPage> {
       SELECT * FROM time_table
       WHERE id=? and day = ? 
       GROUP BY Lecture_No
-    ''',[user.id,dayOfWeek-1]);
+    ''', [user.id, dayOfWeek - 1]);
     // timetableData = timetableData.map((row) => row.toMap()).toList();
     List<Map<String, dynamic>> pastRecord = await db.rawQuery('''
         select subject,Lec_no,Att_Status from attendance_record
@@ -56,9 +56,7 @@ class _AttendanceEntryPageState extends State<AttendanceEntryPage> {
         where Id=?
         ;''', [user.id]);
 
-    temp.forEach((element) => {
-      print(element.toString())
-    });
+    temp.forEach((element) => {print(element.toString())});
     print(pastRecord);
     List<Map<String, dynamic>> updatedTimetableData = [];
     if (pastRecord.isEmpty) {
@@ -138,7 +136,16 @@ class _AttendanceEntryPageState extends State<AttendanceEntryPage> {
                 int lectureNo = data['Lecture_No'];
 
                 return ListTile(
-                  title: Text('Lecture $lectureNo: $subjectName'),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Lecture $lectureNo: $subjectName'),
+                      Text(
+                        data['Classroom'] ?? '', // Display the classroom name
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                    ],
+                  ),
                   subtitle: DropdownButtonFormField<String>(
                     value: data['attendanceType'] ?? attendanceTypes[0],
                     onChanged: (value) {
@@ -155,6 +162,10 @@ class _AttendanceEntryPageState extends State<AttendanceEntryPage> {
                     }).toList(),
                     decoration: InputDecoration(labelText: 'Attendance Type'),
                   ),
+                  // trailing: Text(
+                  //   data['Classroom'] ?? '', // Display the classroom name
+                  //   style: TextStyle(fontSize: 16),
+                  // ),
                 );
               },
             ),

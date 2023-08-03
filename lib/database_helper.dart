@@ -39,7 +39,7 @@ class DatabaseHelper {
         Subject_Name TEXT,
         Day INTEGER,
         Lecture_No INTEGER,
-        Classroom TEXT, -- New column added
+        Classroom TEXT, 
         PRIMARY KEY (Id, Day, Lecture_No),
         FOREIGN KEY (Id, Subject_Name) REFERENCES subject_name (Id, Subject)
           ON DELETE CASCADE
@@ -104,6 +104,15 @@ class DatabaseHelper {
         WHERE subject_name.Id = NEW.Id AND subject_name.Subject = NEW.Subject;
       END;
     ''');
+
+    //   await db.execute('''
+    //   CREATE TRIGGER IF NOT EXISTS insert_subject_trigger
+    //   AFTER INSERT ON time_table
+    //   BEGIN
+    //     INSERT OR IGNORE INTO subject_name (Id, Subject)
+    //     VALUES (NEW.Id, NEW.Subject_Name);
+    //   END;
+    // ''');
   }
 
   Future<List<Map<String, dynamic>>> queryAll(String table) async {
@@ -112,7 +121,7 @@ class DatabaseHelper {
   }
 
   Future<void> insertTimeTable(
-      String id, String subject, int day, int lNo) async {
+      String id, String subject, int day, int lNo, String Classroom) async {
     print("inserting into Time Table");
     Database db = await database;
     List<Map<String, dynamic>> data = await db.rawQuery('''
@@ -134,6 +143,7 @@ class DatabaseHelper {
         'Subject_Name': subject,
         'Day': day,
         'Lecture_No': lNo,
+        'Classroom': Classroom,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );

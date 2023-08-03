@@ -3,6 +3,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:time_trackr/database_helper.dart';
 import 'package:time_trackr/global.dart';
 
+import 'backup/databaseAction.dart';
+
 class TimetablePage extends StatefulWidget {
   @override
   _TimetablePageState createState() => _TimetablePageState();
@@ -31,11 +33,60 @@ class _TimetablePageState extends State<TimetablePage> {
     });
   }
 
+  void _exportTable() {
+    // Implement your export logic here
+    // For example, call the existing _exportDatabase function
+    DatabaseAction.exportDatabase(context);
+  }
+
+  void _importTable() async {
+    // Implement your import logic here
+    // For example, call the existing _importDatabase function
+    // await _importDatabase(context);
+    DatabaseAction.importDatabase(context, user.id);
+  }
+
+  void _shareTable() {
+    // Implement your share logic here
+    // For example, generate a shareable link or file
+    // and use the Share package to share it
+    DatabaseAction.shareDatabase(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Timetable App'),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'export') {
+                _exportTable();
+              } else if (value == 'import') {
+                _importTable();
+              } else if (value == 'share') {
+                _shareTable();
+              }
+            },
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  value: 'export',
+                  child: Text('Export Table'),
+                ),
+                PopupMenuItem(
+                  value: 'import',
+                  child: Text('Import Table'),
+                ),
+                PopupMenuItem(
+                  value: 'share',
+                  child: Text('Share Table'),
+                ),
+              ];
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -234,6 +285,10 @@ class _TimetableEntryPageState extends State<TimetableEntryPage> {
     10,
     (index) => TextEditingController(),
   );
+  List<TextEditingController> classroomControllers = List.generate(
+    10,
+    (index) => TextEditingController(),
+  );
 
   setData() async {
     final DatabaseHelper _databaseHelper = DatabaseHelper();
@@ -244,16 +299,22 @@ class _TimetableEntryPageState extends State<TimetableEntryPage> {
 ''', [user.id, widget.day]);
     print(data.toString());
     for (var val in data) {
+      var temp = (val['Classroom'].toString() != "null" &&
+              val['Classroom'].toString() != "")
+          ? val['Classroom'].toString()
+          : "";
       setState(() {
         subjectControllers[val['Lecture_No'] - 1].text = val['Subject_Name']
             .toString()
             .substring(0, val['Subject_Name'].toString().length - 2);
+        classroomControllers[val['Lecture_No'] - 1].text = temp;
         timetableData[val['Lecture_No'] - 1]['subject'] = val['Subject_Name']
             .toString()
             .substring(0, val['Subject_Name'].toString().length - 2);
         timetableData[val['Lecture_No'] - 1]['type'] = val['Subject_Name']
             .toString()
             .substring(val['Subject_Name'].toString().length - 1);
+        timetableData[val['Lecture_No'] - 1]['Classroom'] = temp;
       });
     }
   }
@@ -302,20 +363,37 @@ class _TimetableEntryPageState extends State<TimetableEntryPage> {
                       });
                     },
                   ),
-                  subtitle: DropdownButtonFormField<String>(
-                    value: data['type'],
-                    onChanged: (value) {
-                      setState(() {
-                        timetableData[index]['type'] = value!;
-                      });
-                    },
-                    items: [
-                      DropdownMenuItem(child: Text('Tutorial'), value: 'T'),
-                      DropdownMenuItem(child: Text('Lecture'), value: 'L'),
-                      DropdownMenuItem(child: Text('Practical'), value: 'P'),
-                      DropdownMenuItem(child: Text('No Lecture'), value: 'Nan'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      DropdownButtonFormField<String>(
+                        value: data['type'],
+                        onChanged: (value) {
+                          setState(() {
+                            timetableData[index]['type'] = value!;
+                          });
+                        },
+                        items: [
+                          DropdownMenuItem(child: Text('Tutorial'), value: 'T'),
+                          DropdownMenuItem(child: Text('Lecture'), value: 'L'),
+                          DropdownMenuItem(
+                              child: Text('Practical'), value: 'P'),
+                          DropdownMenuItem(
+                              child: Text('No Lecture'), value: 'Nan'),
+                        ],
+                        decoration: InputDecoration(labelText: 'Lecture Type'),
+                      ),
+                      TextFormField(
+                        controller: classroomControllers[index],
+                        decoration: InputDecoration(labelText: 'Classroom'),
+                        onChanged: (value) {
+                          setState(() {
+                            timetableData[index]['Classroom'] = value;
+                            print(timetableData[index]['Classroom']);
+                          });
+                        },
+                      ),
                     ],
-                    decoration: InputDecoration(labelText: 'Lecture Type'),
                   ),
                   leading: Text(
                     'Lecture ${index + 1}', // Display the lecture number
@@ -337,17 +415,37 @@ class _TimetableEntryPageState extends State<TimetableEntryPage> {
             if (data['type'] != "Nan" &&
                 data['subject'] != null &&
                 data['subject']!.trim() != "") {
-              await dbHelper.insertTimeTable(user.id,
-                  "${data['subject']!}_${data['type']}", widget.day, index);
+              String subjectNameWithType =
+                  "${cleanAndCapitalize(data['subject']!)}_${data['type']}";
+              await dbHelper.insertTimeTable(
+                user.id,
+                subjectNameWithType,
+                widget.day,
+                index,
+                cleanAndCapitalize(data['Classroom'] ?? "")
+                    .toUpperCase(), // Pass the Classroom value
+              );
             }
             index++;
           }
           //show snackbar
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text("Updated Sucdessfully")));
+              .showSnackBar(SnackBar(content: Text("Updated Successfully")));
         },
         child: Icon(Icons.save),
       ),
     );
+  }
+
+  String cleanAndCapitalize(String input) {
+    String cleaned = input.replaceAll(RegExp(r'\s+'), ' ');
+    String trimmed = cleaned.trim();
+    return trimmed.split(' ').map((word) {
+      if (word.isNotEmpty) {
+        return '${word[0].toUpperCase()}${word.substring(1)}';
+      } else {
+        return '';
+      }
+    }).join(' ');
   }
 }
