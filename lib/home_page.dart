@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:time_trackr/reviewAttendanceSubject.dart';
 import 'package:time_trackr/shared_pref.dart';
 import 'package:flutter_chart/flutter_chart.dart';
 import 'package:time_trackr/vennDiagram.dart';
@@ -214,10 +215,20 @@ class _AttendancePercentagePieChartState
         itemCount: subjectsData.length,
         itemBuilder: (context, index) {
           Map<String, dynamic> subjectData = subjectsData[index];
-          return VennDiagram(
-            subject: subjectData['Subject'],
-            attendance: subjectData['Attendance'],
-            classTillDate: subjectData['classTillDate'],
+          return GestureDetector(
+            onTap: (){
+              Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => ReviewAttendancePage(subjectName: subjectData['Subject']),
+  ),
+);
+            },
+            child: VennDiagram(
+              subject: subjectData['Subject'],
+              attendance: subjectData['Attendance'],
+              classTillDate: subjectData['classTillDate'],
+            ),
           );
         },
       ),

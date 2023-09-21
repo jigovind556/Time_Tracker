@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:time_trackr/global.dart';
+import 'package:time_trackr/reviewAttendanceSubject.dart';
 import 'package:time_trackr/shared_pref.dart';
 
 import 'attendancePage.dart';
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
         '/timeTableEntry': (context) => TimetablePage(),
         '/attendaceEntry': (context) => AttendanceEntryPage(),
         '/backupPage': (context) => BackupPage(),
+        // '/subjectAttendance': (context,name) => ReviewAttendancePage(subjectName: name,),
       },
       // home: const MyHomePage(title: 'Time Tracker'),
     );
