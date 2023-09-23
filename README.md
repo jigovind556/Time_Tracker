@@ -1,16 +1,39 @@
-# time_trackr
+# Time Tracker
 
-A new Flutter project.
+Manage your schedule, track attendance, and stay organized with Time Tracker. This versatile application is designed for students and professionals to streamline their time management.
+
+## Features
+
+- **Schedule Management**: Create, edit, and organize your daily schedule.
+- **Attendance Tracking**: Keep a record of your attendance for classes or meetings.
+- **Data Export/Import**: Easily back up and restore your data.
+- **Intuitive UI**: User-friendly interface for seamless navigation.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Follow these steps to get started with Time Tracker:
 
-A few resources to get you started if this is your first Flutter project:
+1. **Installation**: build it from source (instructions in [CONTRIBUTING](CONTRIBUTING.md)).
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+2. **User Guide**: Refer to the [User Guide](docs/user-guide.md) for detailed instructions on using Time Tracker.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+3. **Contributing**: We welcome contributions! Read our [Contributing Guidelines](CONTRIBUTING.md) to contribute to the project.
+
+## Screenshots
+
+![Screenshot 1](screenshots/screenshot1.png)
+![Screenshot 2](screenshots/screenshot2.png)
+
+## Support
+
+If you have any questions, issues, or feature requests, please [open an issue](https://github.com/yourusername/timetracker/issues).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Hat tip to anyone whose code was used
+- Inspirational quotes
+
