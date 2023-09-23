@@ -11,7 +11,6 @@ import 'package:time_trackr/vennDiagram.dart';
 import 'database_helper.dart';
 import 'global.dart';
 
-
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -90,12 +89,12 @@ class NavigationPanel extends StatelessWidget {
     return Drawer(
       child: Container(
         // width: MediaQuery.of(context).size.width * 0.65, // 65% of screen width
-        color: Theme.of(context).primaryColor, // Use primary theme color for background
+        color: Theme.of(context)
+            .primaryColor, // Use primary theme color for background
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             DrawerHeader(
-              
               decoration: BoxDecoration(color: Theme.of(context).primaryColor),
               // padding: EdgeInsets.symmetric(vertical: 1, horizontal: 16), // Adjust the padding here
               child: Text(
@@ -177,8 +176,6 @@ class NavigationPanel extends StatelessWidget {
   }
 }
 
-
-
 class AttendancePercentagePieChart extends StatefulWidget {
   @override
   _AttendancePercentagePieChartState createState() =>
@@ -216,13 +213,14 @@ class _AttendancePercentagePieChartState
         itemBuilder: (context, index) {
           Map<String, dynamic> subjectData = subjectsData[index];
           return GestureDetector(
-            onTap: (){
+            onTap: () {
               Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => ReviewAttendancePage(subjectName: subjectData['Subject']),
-  ),
-);
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ReviewAttendancePage(subjectName: subjectData['Subject']),
+                ),
+              );
             },
             child: VennDiagram(
               subject: subjectData['Subject'],
@@ -235,7 +233,6 @@ class _AttendancePercentagePieChartState
     );
   }
 }
-
 
 class NoSubjectsWidget extends StatelessWidget {
   @override

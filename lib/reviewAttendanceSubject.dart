@@ -16,7 +16,7 @@ class ReviewAttendancePage extends StatefulWidget {
 class _ReviewAttendancePageState extends State<ReviewAttendancePage> {
   late List<Map<String, dynamic>> attendanceData = [];
   late List<bool> showLectureColumns;
-
+  late Map<String, Map<int, String>> organizedData = {};
   @override
   void initState() {
     super.initState();
@@ -32,6 +32,25 @@ class _ReviewAttendancePageState extends State<ReviewAttendancePage> {
       WHERE Id = ? AND Subject = ?
       ORDER BY Date DESC, Lec_no ASC;
     ''', [user.id, widget.subjectName]);
+    // print(attendanceData);
+    for (int i = 0; i < attendanceData.length; i++) {
+      // print(attendanceData[i]);
+      showLectureColumns[attendanceData[i]['Lec_no'] - 1] = true;
+    }
+
+    // Loop through your existing attendanceData and organize it
+    for (var data in attendanceData) {
+      final date = data['Date'];
+      final lectureNumber = data['Lec_no'];
+      final status = data['Att_Status'];
+
+      if (!organizedData.containsKey(date)) {
+        organizedData[date] = {};
+      }
+
+      organizedData[date]![lectureNumber] = status;
+    }
+    print(organizedData);
     setState(() {});
   }
 
@@ -46,7 +65,7 @@ class _ReviewAttendancePageState extends State<ReviewAttendancePage> {
       case 'Present':
         return Colors.green[100]!;
       default:
-        return Colors.white;
+        return Colors.transparent;
     }
   }
 
@@ -54,36 +73,38 @@ class _ReviewAttendancePageState extends State<ReviewAttendancePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Attendance for ${widget.subjectName}'),
+        title: Text('${widget.subjectName}'),
       ),
       body: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          columns: [
-            DataColumn(label: Text('Date')),
-            for (int i = 1; i <= 10; i++)
-              if (showLectureColumns[i - 1]) DataColumn(label: Text('Lec $i')),
-          ],
-          rows: attendanceData.map((data) {
-            List<DataCell> cells = [
-              DataCell(Text(data['Date'])),
-            ];
-            for (int i = 1; i <= 10; i++) {
-              if (showLectureColumns[i - 1]) {
-                String lectureStatus = '';
-                if (data['Lec_no'] == i) {
-                  lectureStatus = data['Att_Status'];
+        child: Container(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              columns: [
+                DataColumn(label: Text('Date')),
+                for (int i = 1; i <= 10; i++)
+                  if (showLectureColumns[i - 1])
+                    DataColumn(label: Text('Lec $i')),
+              ],
+              rows: organizedData.keys.map((date) {
+                List<DataCell> cells = [
+                  DataCell(Text(date)),
+                ];
+                for (int i = 1; i <= 10; i++) {
+                  if (showLectureColumns[i - 1]) {
+                    String lectureStatus = organizedData[date]![i] ?? '';
+                    cells.add(DataCell(
+                      Container(
+                        color: _getColorForAttendance(lectureStatus),
+                        child: Center(child: Text(lectureStatus)),
+                      ),
+                    ));
+                  }
                 }
-                cells.add(DataCell(
-                  Container(
-                    color: _getColorForAttendance(lectureStatus),
-                    child: Text(lectureStatus),
-                  ),
-                ));
-              }
-            }
-            return DataRow(cells: cells);
-          }).toList(),
+                return DataRow(cells: cells);
+              }).toList(),
+            ),
+          ),
         ),
       ),
     );
