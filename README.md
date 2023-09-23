@@ -19,21 +19,10 @@ Follow these steps to get started with Time Tracker:
 
 3. **Contributing**: We welcome contributions! Read our [Contributing Guidelines](CONTRIBUTING.md) to contribute to the project.
 
-## Screenshots
-
-![Screenshot 1](screenshots/screenshot1.png)
-![Screenshot 2](screenshots/screenshot2.png)
 
 ## Support
 
 If you have any questions, issues, or feature requests, please [open an issue](https://github.com/yourusername/timetracker/issues).
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Hat tip to anyone whose code was used
-- Inspirational quotes
 
