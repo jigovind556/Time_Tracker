@@ -50,7 +50,7 @@ class _ReviewAttendancePageState extends State<ReviewAttendancePage> {
 
       organizedData[date]![lectureNumber] = status;
     }
-    print(organizedData);
+    // print(organizedData);
     setState(() {});
   }
 

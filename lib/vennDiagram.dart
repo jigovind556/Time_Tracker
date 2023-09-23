@@ -50,11 +50,11 @@ class VennDiagram extends StatelessWidget {
                     centerSpaceRadius: 20,
                     sections: [
                       PieChartSectionData(
-                        value: attendancePercentage,
+                        value: double.parse(attendancePercentage.toStringAsFixed(2)),
                         color: Theme.of(context).primaryColorLight,
                       ),
                       PieChartSectionData(
-                        value: 100 - attendancePercentage,
+                        value: double.parse((100 - attendancePercentage).toStringAsFixed(2)),
                         color: Colors.grey,
                       ),
                     ],
